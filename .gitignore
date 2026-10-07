@@ -42,3 +42,14 @@ next-env.d.ts
 
 # Local browser audit tools and screenshots
 /.audit/
+
+# Local shell and tooling caches
+/Microsoft/Windows/PowerShell/
+.cache/
+.turbo/
+.npm/
+.pnpm-store/
+.eslintcache
+
+# Private teaching-module source; keep the local archive out of the public repo
+/content/sources/Materi_Ajar_Digital_Fakta_Opini_Kelas_XII.docx
