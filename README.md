@@ -1,3 +1,38 @@
+# BEDAH INFORMASI!
+
+Platform pembelajaran interaktif Bahasa Indonesia untuk Fase F / kelas XII. Materi bersumber dari modul Hanunah Rizqi Mumtaz, SMA Muhammadiyah 2 Tangerang, di `content/sources/Materi_Ajar_Digital_Fakta_Opini_Kelas_XII.docx`. Konten terstruktur ada di `src/content/module.ts`.
+
+Homepage mencakup materi, game enam pernyataan, checklist verifikasi, simulasi delapan klaim karhutla, empat level latihan, evaluasi, refleksi, rangkuman, dan glosarium. Angka karhutla merupakan bahan simulasi modul, bukan laporan kondisi terkini. Foundation UI dan demo lama tetap dipertahankan.
+
+Progress dan jawaban disimpan di localStorage tanpa akun/backend. Data tidak berpindah perangkat dan dapat hilang jika data browser dihapus. Ketika storage diblokir, aktivitas tetap berjalan selama halaman terbuka. Jawaban terbuka dinilai dengan rubrik dan diskusi bersama guru; nilai otomatis hanya untuk aktivitas pilihan.
+
+## Pemeriksaan aplikasi
+
+```sh
+npm run lint
+npm run typecheck
+npm run build
+```
+
+## Modul PDF
+
+Tambahkan PDF asli hasil ekspor modul ke `public/assets/modul-ajar.pdf`. Viewer menyediakan download dan tab baru ketika file tersedia. Jika belum ada, pesan fallback tampil tanpa membuat PDF pengganti.
+
+## Uji browser
+
+Menggunakan Microsoft Edge terpasang, dengan alat uji diisolasi dari dependency aplikasi:
+
+```sh
+npm install --prefix .audit --no-save --package-lock=false playwright @axe-core/playwright
+npm run start -- --hostname 127.0.0.1 --port 3210
+# Pada terminal lain:
+node tests/smoke.mjs
+```
+
+Menguji sembilan viewport 320–1440px, interaksi belajar, keyboard/dialog, persistensi dan pemulihan storage, reduced motion, serta accessibility axe. Screenshot berada di `.audit/screenshots/`. Gunakan environment variable `TEST_URL` untuk alamat lain.
+
+## Framework
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

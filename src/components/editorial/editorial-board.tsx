@@ -1,0 +1,42 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { motion, useReducedMotion } from "motion/react";
+import { editorialClaims, editorialParagraphs, editorActions, editorCategories } from "@/content/module";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
+import { isStringRecord, useLearningState, useProgress } from "@/components/learning/use-learning-state";
+
+const initial: Record<string, string> = {};
+export function EditorialBoard() {
+  const [answers, setAnswers] = useLearningState("editorial", initial, isStringRecord);
+  const [current, setCurrent] = useState(0);
+  const panel = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
+  const { complete } = useProgress();
+  const claim = editorialClaims[current];
+  const category = answers[`category-${current}`] ?? "";
+  const action = answers[`action-${current}`] ?? "";
+  const saved = answers[`saved-${current}`] === "yes";
+  const count = editorialClaims.filter((_, i) => answers[`saved-${i}`] === "yes").length;
+  const points = editorialClaims.reduce((total, item, i) => total + (answers[`saved-${i}`] === "yes" ? Number(answers[`category-${i}`] === item.category) + Number((item.actions as readonly string[]).includes(answers[`action-${i}`])) : 0), 0);
+  const final = answers.final === "yes";
+  const score = Math.round(points / (editorialClaims.length * 2) * 80) + (final && answers.decision === "BUTUH REVISI" ? 20 : 0);
+  function update(key: string, value: string) { setAnswers(state => ({ ...state, [key]: value })); }
+  function select(index: number) { setCurrent(index); requestAnimationFrame(() => { panel.current?.focus({ preventScroll: true }); if (window.innerWidth < 1024) panel.current?.scrollIntoView({ block: "start", behavior: "auto" }); }); }
+  return <div className="grid items-start gap-5 lg:grid-cols-[1.15fr_1fr]">
+    <article className="rounded-3xl border border-border bg-surface p-5 sm:p-8"><div className="mb-5 flex flex-wrap items-center gap-2"><Badge variant="accent">MEJA REDAKSI</Badge><span className="text-caption text-muted-foreground">Teks simulasi · Bab 5</span></div><h3 className="mb-3 text-heading-2">Karhutla: di balik angka dan pendapat</h3><p className="mb-6 text-caption text-muted-foreground">Klik potongan berwarna untuk membedah klaim. Angka dalam teks merupakan bahan simulasi modul, bukan laporan kondisi terkini.</p><div className="space-y-5 leading-loose">{editorialParagraphs.map((paragraph, i) => <p key={i}>{paragraph.map((piece, j) => typeof piece === "string" ? <span key={j}>{piece}</span> : <button type="button" key={j} aria-label={`Analisis klaim ${piece + 1}: ${editorialClaims[piece].text}`} aria-pressed={current === piece} className={`claim-highlight ${current === piece ? "bg-primary ring-2 ring-foreground" : answers[`saved-${piece}`] === "yes" ? "bg-secondary" : "bg-highlight"}`} onClick={() => select(piece)}>{editorialClaims[piece].text}{answers[`saved-${piece}`] === "yes" && <span aria-label="sudah dianalisis"> ✓</span>}</button>)}</p>)}</div><div className="mt-6 border-t border-border pt-4 text-caption text-muted-foreground">Rubrik redaksi: <strong className="text-foreground">akurat · berimbang · logis · transparan.</strong></div></article>
+    <div ref={panel} tabIndex={-1} className="scroll-mt-28 space-y-4 rounded-3xl border border-foreground bg-surface p-5 sm:p-7">
+      <div className="flex items-center justify-between gap-3"><span className="eyebrow">CATATAN EDITOR</span><span className="font-mono text-caption">{count}/8 KLAIM</span></div>
+      {final ? <motion.div initial={reduced ? false : { opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: reduced ? 0 : 0.35 }} className="space-y-5" role="status"><div className="rounded-2xl bg-primary p-6"><span className="eyebrow">EDITOR SCORE</span><p className="text-4xl font-bold">{score}<span className="text-heading-3">/100</span></p><p className="mt-2 text-caption">80 poin analisis klaim + 20 poin ketepatan putusan.</p></div><span className="eyebrow">PUTUSAN SIMULASI KAMU</span><h3>{answers.decision}</h3><p className="text-caption">Model putusan untuk naskah tanpa bukti verifikasi: <strong>BUTUH REVISI.</strong> Putusan layak terbit memerlukan data akurat, opini berimbang, logika yang kuat, serta sumber dan waktu yang transparan.</p><p className="rounded-xl bg-muted p-4 text-caption"><strong>Alasan putusanmu</strong><span className="mt-2 block">{answers.reason}</span>{answers.decision === "LAYAK DITERBITKAN" && <span className="mt-2 block text-warning">Tinjau lagi: penamaan lembaga belum menjadi bukti bahwa data sudah terkonfirmasi. Cocokkan putusanmu dengan hasil verifikasi sebelum menerbitkan.</span>}</p><details><summary className="cursor-pointer font-semibold">Model analisis editor</summary><ol className="mt-4 space-y-4">{editorialClaims.map((item, i) => <li key={item.text} className="text-caption"><strong>{i + 1}. {item.category}</strong><p>{item.explanation}</p></li>)}</ol></details><Button variant="outline" onClick={() => { setAnswers({}); setCurrent(0); }}>Ulangi simulasi</Button></motion.div> : <>
+        <p className="text-caption text-muted-foreground">Klaim {current + 1}</p><blockquote className="rounded-xl bg-highlight p-4 text-body font-semibold">“{claim.text}”</blockquote>
+        <fieldset disabled={saved} className="space-y-3"><legend className="mb-3 text-caption font-bold">1. Tentukan kategori</legend><div className="grid gap-2 sm:grid-cols-2">{editorCategories.map(option => <button type="button" key={option} disabled={saved} aria-pressed={category === option} onClick={() => update(`category-${current}`, option)} className={`answer-option text-caption ${category === option ? "border-foreground bg-primary" : ""}`}>{option}</button>)}</div></fieldset>
+        <label className="block text-caption font-bold" htmlFor="editor-action">2. Pilih tindakan utama editor</label><select id="editor-action" className="form-field" disabled={saved} value={action} onChange={event => update(`action-${current}`, event.target.value)}><option value="">Pilih tindakan…</option>{editorActions.map(option => <option key={option}>{option}</option>)}</select>
+        {saved ? <div role="status" className="rounded-xl bg-secondary/50 p-4 text-caption"><strong>{category === claim.category ? "Kategori tepat." : `Kategori model: ${claim.category}.`}</strong><p className="mt-2">{claim.explanation}</p><p className="mt-2">Tindakan yang relevan: {claim.actions.join(" / ")}.</p></div> : <Button disabled={!category || !action} onClick={() => update(`saved-${current}`, "yes")}><Icon name="check" />Simpan analisis</Button>}
+        <div className="flex flex-wrap gap-2" aria-label="Pilih nomor klaim">{editorialClaims.map((_, i) => <button type="button" key={i} aria-label={`Buka klaim ${i + 1}`} aria-pressed={current === i} onClick={() => setCurrent(i)} className={`flex size-11 items-center justify-center rounded-lg border text-caption font-semibold ${current === i ? "border-foreground bg-primary" : answers[`saved-${i}`] === "yes" ? "border-success bg-success-soft" : "border-border"}`}>{i + 1}</button>)}</div>
+        {count === 8 && <div className="space-y-4 border-t border-border pt-5"><h3>Putusan redaksi</h3><p className="text-caption text-muted-foreground">Apakah naskah ini sudah memiliki bukti cukup untuk diterbitkan? Nilai kualitas bukti, bukan persetujuanmu terhadap isinya.</p><div className="grid gap-2 sm:grid-cols-2">{["LAYAK DITERBITKAN", "BUTUH REVISI"].map(option => <button type="button" key={option} className={`answer-option text-caption ${answers.decision === option ? "border-foreground bg-primary" : ""}`} aria-pressed={answers.decision === option} onClick={() => update("decision", option)}>{option}</button>)}</div><label className="block text-caption font-semibold" htmlFor="editor-reason">Alasan putusan (minimal 15 karakter)</label><textarea id="editor-reason" className="form-field" rows={3} maxLength={2000} value={answers.reason ?? ""} onChange={event => update("reason", event.target.value)} placeholder="Jelaskan bukti atau konteks yang masih perlu diperiksa…" /><Button disabled={!answers.decision || (answers.reason ?? "").trim().length < 15} onClick={() => { update("final", "yes"); complete("editorial"); }}>Kirim putusan <Icon name="arrow" /></Button></div>}
+      </>}
+    </div>
+  </div>;
+}
