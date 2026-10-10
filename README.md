@@ -1,6 +1,6 @@
 # BEDAH INFORMASI!
 
-Platform pembelajaran interaktif Bahasa Indonesia untuk Fase F / kelas XII. Materi bersumber dari modul Hanunah Rizqi Mumtaz, SMA Muhammadiyah 2 Tangerang, di `content/sources/Materi_Ajar_Digital_Fakta_Opini_Kelas_XII.docx`. Konten terstruktur ada di `src/content/module.ts`.
+Platform pembelajaran interaktif Bahasa Indonesia untuk Fase F / kelas XII. Materi bersumber dari modul Hanunah Rizqi Mumtaz, SMA Muhammadiyah 2 Tangerang. Konten terstruktur ada di `src/content/module.ts`. Dokumen sumber diarsipkan secara lokal dan tidak disertakan dalam repository public.
 
 Homepage mencakup materi, game enam pernyataan, checklist verifikasi, simulasi delapan klaim karhutla, empat level latihan, evaluasi, refleksi, rangkuman, dan glosarium. Angka karhutla merupakan bahan simulasi modul, bukan laporan kondisi terkini. Foundation UI dan demo lama tetap dipertahankan.
 
@@ -13,10 +13,6 @@ npm run lint
 npm run typecheck
 npm run build
 ```
-
-## Modul PDF
-
-Tambahkan PDF asli hasil ekspor modul ke `public/assets/modul-ajar.pdf`. Viewer menyediakan download dan tab baru ketika file tersedia. Jika belum ada, pesan fallback tampil tanpa membuat PDF pengganti.
 
 ## Uji browser
 

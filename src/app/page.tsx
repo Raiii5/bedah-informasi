@@ -4,7 +4,6 @@ import { Container } from "@/components/ui/container";
 import { Section } from "@/components/ui/section";
 import { Icon } from "@/components/ui/icon";
 import { HeroVisual } from "@/components/hero/hero-visual";
-import { PdfViewer } from "@/components/pdf/pdf-viewer";
 import { LearningJourney } from "@/components/learning/learning-journey";
 import { SectionHeading } from "@/components/learning/section-heading";
 import { Aperception } from "@/components/learning/aperception";
@@ -29,7 +28,7 @@ export default function Home() {
             <h1 id="hero-title" className="hero-headline"><span className="block">BEDAH</span><span className="block">INFORMASI<span className="hero-exclamation">!</span></span></h1>
             <p className="max-w-xl text-body text-muted-foreground">{moduleInfo.subtitle}</p>
             <p className="font-semibold">Baca. Periksa. Bandingkan. Simpulkan.</p>
-            <div className="flex flex-wrap gap-3"><a href="#materi" className="action-link bg-primary">Mulai Belajar <Icon name="arrow" /></a><PdfViewer /></div>
+            <div className="flex"><a href="#materi" className="action-link w-full justify-center bg-primary sm:w-auto">Mulai Belajar <Icon name="arrow" /></a></div>
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-2 text-caption text-muted-foreground"><span className="inline-flex items-center gap-2"><Icon name="book" className="size-4" />6 bab pembelajaran</span><span className="inline-flex items-center gap-2"><Icon name="chart" className="size-4" />{moduleInfo.duration}</span><span className="inline-flex items-center gap-2"><Icon name="check" className="size-4" />Belajar tanpa login</span></div>
           </div>
           <HeroVisual />

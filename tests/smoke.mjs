@@ -23,7 +23,7 @@ async function accessibility(label) {
 
 try {
   await page.goto(baseURL);
-  await page.getByRole("button", { name: "Buka Modul PDF", exact: true }).waitFor();
+  await page.getByRole("heading", { level: 1 }).waitFor();
   assert.equal(await page.getByRole("heading", { level: 1 }).count(), 1);
   await accessibility("Initial homepage accessibility");
 
@@ -50,16 +50,6 @@ try {
   }
 
   await page.setViewportSize({ width: 390, height: 844 });
-  // Exercise the genuine missing-file branch independently of the PDF on disk.
-  await page.route("**/assets/modul-ajar.pdf", route => route.fulfill({ status: 404, body: "Not found" }));
-  await page.getByRole("button", { name: "Buka Modul PDF", exact: true }).click();
-  await page.getByRole("heading", { name: "PDF belum tersedia" }).waitFor();
-  await accessibility("PDF fallback accessibility");
-  await page.screenshot({ path: ".audit/screenshots/pdf-mobile.png" });
-  await page.keyboard.press("Escape");
-  await page.unroute("**/assets/modul-ajar.pdf");
-  assert.equal(await page.getByRole("button", { name: "Buka Modul PDF", exact: true }).evaluate(element => element === document.activeElement), true);
-
   for (const choice of ["Cari peneliti dan sumber aslinya", "Belum; periksa bukti kausalitas", "Bandingkan judul dengan isi dan buktinya"]) await page.getByRole("button", { name: choice, exact: true }).click();
   assert.equal(await page.getByText("Cara berpikir yang tepat!", { exact: true }).count(), 3);
 
@@ -174,7 +164,7 @@ try {
   await offlineStoragePage.getByRole("tabpanel").getByRole("button", { name: "Tandai bab selesai" }).click();
   await offlineStoragePage.waitForFunction(() => document.querySelector('[role="progressbar"]').getAttribute("aria-valuenow") === "13");
   await offlineContext.close();
-  console.log("PASS: quizzes, editorial, practice, reflection, glossary, PDF fallback, storage recovery, reduced motion, and accessibility.");
+  console.log("PASS: quizzes, editorial, practice, reflection, glossary, storage recovery, reduced motion, and accessibility.");
 } catch (error) {
   // Attach a useful screenshot if a step fails.
   await page.screenshot({ path: ".audit/screenshots/failure.png", fullPage: false });
